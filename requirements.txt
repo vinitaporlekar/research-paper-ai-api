@@ -9,6 +9,7 @@ idna==3.11
 pillow==12.1.0
 pydantic==2.12.5
 pydantic_core==2.41.5
+pypdf==6.6.0
 python-dotenv==1.2.1
 python-magic==0.4.27
 python-multipart==0.0.21

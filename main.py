@@ -10,7 +10,7 @@ UPLOAD_DIR.mkdir(exist_ok=True)
 
 app = FastAPI(title="FastAPI File Upload Service")
 
-@app.post("/upload/single")
+@app.post("/upload")
 async def upload_single_file(file: UploadFile = File(...)):
     """Upload a single file with basic validation"""
     if file.filename == "":
