@@ -17,6 +17,7 @@ def extract_paper_info(pdf_text: str) -> dict:
     3. abstract: The abstract or summary (2-3 sentences if no abstract found)
     4. tags: 3-5 relevant topic tags/keywords
     5. file_url: URL where the paper is hosted (if mentioned)
+    6. paper_id: A unique identifier for the paper (e.g., DOI or arXiv ID; if not found, generate a random unique string)
 
     Paper text:
     {pdf_text[:8000]}
@@ -27,7 +28,8 @@ def extract_paper_info(pdf_text: str) -> dict:
     "authors": ["Author 1", "Author 2"],
     "abstract": "Abstract text here...",
     "tags": ["tag1", "tag2", "tag3"],
-    "file_url": "URL here or empty string"
+    "file_url": "URL here or empty string",
+    "paper_id": "unique-paper-id-here"
     }}"""
 
     try:
