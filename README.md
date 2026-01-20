@@ -32,3 +32,17 @@ uvicorn main:app --reload
 ```
 
 The API will be available at `http://localhost:5000`
+
+### API Details
+
+1. /upload - POST \
+Endpoint to upload a research paper and retrieve important information using AI and pdf parser and store it in a relational DB
+
+2. /papers - GET \
+Endpoint to view all papers for a specific user
+
+3. /papers/{title} - GET \
+Endpoint to get a paper with a specific title
+
+4. /papers/{title} - DELETE \
+Endpoint to delete a paper with a specific title
