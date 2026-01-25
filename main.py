@@ -112,7 +112,128 @@ async def delete_paper(
         return {"message": "Paper deleted successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    # Add this import at the top with other imports
+from pydantic import BaseModel
 
+# Add this class after your imports (before the endpoints)
+class ChatRequest(BaseModel):
+    question: str
+
+# Add this endpoint after your other endpoints
+@app.post("/papers/{paper_id}/chat")
+async def chat_with_paper(
+    paper_id: str,
+    chat_request: ChatRequest,
+    user_id: str = "default-user",
+   
+):
+    """Chat with AI about a specific paper"""
+    try:
+        # 1. Get paper from database
+        paper = supabase.table("papers").select("*").eq("id", paper_id).eq("user_id", user_id).single().execute()
+        
+        if not paper.data:
+            raise HTTPException(status_code=404, detail="Paper not found")
+        
+        # 2. Get paper content from storage
+        file_path = paper.data["file_path"]
+        file_bytes = supabase.storage.from_("research-papers").download(file_path)
+        
+        # 3. Extract text from PDF
+        pdf_text = extract_text_from_pdf(file_bytes)
+        
+        # 4. Create AI prompt with paper context
+        prompt = f"""You are an AI assistant helping someone understand a research paper.
+
+Paper Title: {paper.data['title']}
+Paper Abstract: {paper.data['abstract']}
+
+Full Paper Text (first 8000 chars):
+{pdf_text[:8000]}
+
+User Question: {chat_request.question}
+
+Please provide a clear, helpful answer based on the paper content above. If the question cannot be answered from the paper, say so politely."""
+
+        # 5. Get AI response
+        import google.generativeai as genai
+        genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        
+        response = model.generate_content(prompt)
+        ai_answer = response.text.strip()
+        
+        # 6. Return response
+        return {
+            "question": chat_request.question,
+            "answer": ai_answer,
+            "paper_title": paper.data['title']
+        }
+        
+    except Exception as e:
+        print(f"Chat error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+# Add this import at the top with other imports
+from pydantic import BaseModel
+
+# Add this class after your imports (before the endpoints)
+class ChatRequest(BaseModel):
+    question: str
+
+# Add this endpoint after your other endpoints
+@app.post("/papers/{paper_id}/chat")
+async def chat_with_paper(
+    paper_id: str,
+    chat_request: ChatRequest,
+    user_id: str = "default-user",
+   
+):
+    """Chat with AI about a specific paper"""
+    try:
+        # 1. Get paper from database
+        paper = supabase.table("papers").select("*").eq("id", paper_id).eq("user_id", user_id).single().execute()
+        
+        if not paper.data:
+            raise HTTPException(status_code=404, detail="Paper not found")
+        
+        # 2. Get paper content from storage
+        file_path = paper.data["file_path"]
+        file_bytes = supabase.storage.from_("research-papers").download(file_path)
+        
+        # 3. Extract text from PDF
+        pdf_text = extract_text_from_pdf(file_bytes)
+        
+        # 4. Create AI prompt with paper context
+        prompt = f"""You are an AI assistant helping someone understand a research paper.
+
+Paper Title: {paper.data['title']}
+Paper Abstract: {paper.data['abstract']}
+
+Full Paper Text (first 8000 chars):
+{pdf_text[:8000]}
+
+User Question: {chat_request.question}
+
+Please provide a clear, helpful answer based on the paper content above. If the question cannot be answered from the paper, say so politely."""
+
+        # 5. Get AI response
+        import google.generativeai as genai
+        genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        
+        response = model.generate_content(prompt)
+        ai_answer = response.text.strip()
+        
+        # 6. Return response
+        return {
+            "question": chat_request.question,
+            "answer": ai_answer,
+            "paper_title": paper.data['title']
+        }
+        
+    except Exception as e:
+        print(f"Chat error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 @app.get("/")
 async def root():
     return {"message": "FastAPI File Upload Service is running"}
