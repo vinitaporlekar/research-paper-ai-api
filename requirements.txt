@@ -79,3 +79,11 @@ uvloop==0.22.1
 watchfiles==1.1.1
 websockets==15.0.1
 yarl==1.22.0
+fastapi==0.128.0
+uvicorn==0.40.0
+python-multipart==0.0.21
+python-dotenv==1.2.1
+supabase==2.27.2
+pypdf==6.6.0
+google-generativeai==0.8.6
+httpx==0.28.1
